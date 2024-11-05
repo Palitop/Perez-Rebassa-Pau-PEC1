@@ -1,0 +1,128 @@
+---
+title: "PEC 1"
+author: "Pau Pérez Rebassa"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Url del reporsitorio de *github*
+
+[Enlace al repositorio de github](https://github.com/Palitop/Perez-Rebassa-Pau-PEC1): https://github.com/Palitop/Perez-Rebassa-Pau-PEC1
+
+## Preparación de la PEC
+
+Lo primero de todo, se va a ejecutar el siguientee código para poder evitar las salidas no deseadas de algunos comandos.
+
+```{r}
+paquetes = c("GenomicRanges", "Biobase", "GenomeInfoDb", "matrixStats", "MatrixGenerics",
+             "stats4", "BiocGenerics", "S4Vectors", "SummarizedExperiment")
+suppressMessages(suppressWarnings(invisible(lapply(paquetes, library,
+                                                   character.only = TRUE))))
+```
+
+## Descarga del *dataset*
+
+Para realizar esta práctica he escogido el github que se nos ha facilitado en el enuciado con dirección url de **https://github.com/nutrimetabolomics/metaboData/** y de todos los *datasets* que hay almacenado he escogido el de la cachexia, porque me parece un tema bastante interesante y poco conocido entre la población.
+
+![Captura del github proporacionado en el enunciado](C:\Users\paupe\Documents\Màster\Assignatures\Anàlisi de dades òmiques\PAC1\Imagenes\2024-11-05_21h42_02.png)
+
+## Crear el *SummarizedExperiment*
+
+Leemos el fichero descargado del *github* del enunciado de la práctica y lo cargamos en una variable.
+
+```{r}
+cachexia = read.csv("human_cachexia.csv")
+```
+
+Eliminamos las dos primeras columnas que identifican el sujeto del experimento y su condición para poder obtener los datos en bruto del *dataset*.
+
+```{r}
+datos_bruto = cachexia[, c(-1, -2)]
+```
+
+Convertimos los datos en bruto en una matriz para poder crear próximamente el objeto *SummerizedExperiment* y la transponemos para que cuadren el número de columnas y de filas.
+
+
+```{r}
+datos_bruto_matriz = t(as.matrix(datos_bruto))
+```
+
+Preparamos los datos de la columna.
+
+```{r}
+column_Data = data.frame(
+  PatientID = cachexia[, 1],
+  MuscleLoss = cachexia[, 2],
+  row.names = cachexia[, 1],
+  stringsAsFactors = FALSE
+)
+```
+
+Preparamos la metadata.
+
+```{r}
+metadata = data.frame(
+  VarNames = colnames(datos_bruto),
+  TypeCol = sapply(datos_bruto, class)
+)
+```
+
+Finalmente, creamos el objeto *SummarizedExperiment* con los datos que hemos preparado antes con el *dataset* elegido.
+
+```{r}
+se = SummarizedExperiment(
+    assays = list(counts = datos_bruto_matriz),
+    colData = column_Data,
+    metadata = metadata
+)
+```
+
+## Exploración del *dataset*
+
+Como inicio de la exploración del dataset, podemos ver un breve resumen del objeto.
+
+```{r}
+se
+```
+
+Como podemos ver en el resultado del resumen, la **dimensión** de los datos es de 63 variables y 77 registros. La metadata consiste en saber cual es el nombre de las variables y el tipo de dato que contienen. Las variables que identifican, en este caso, al paciente, son **PatientID**, el id del paciente y **MuscleLoss** con los valores de *cachexia* y *control*.
+
+Por otro lado, podemos ver si los datos en bruto contienen algún valor *na* en los datos.
+
+```{r}
+colSums(is.na(assay(se, "counts")))
+```
+
+Los resultados nos dicen que no hay ningún registro con valores nulos.
+
+## Subida de los datos a repositorio nuevo
+
+En mi caso, yo ya tenía una cuenta en la plataforma de reporsitorios *github*, por lo tanto, me he saltado el paso de crear la cuenta.
+
+Hay que apretar el botón que se marca en la siguiente captura para poder crear un nuevo repositorio en el perfil.
+
+![Captura como crear un nuevo repositorio](C:\Users\paupe\Documents\Màster\Assignatures\Anàlisi de dades òmiques\PAC1\Imagenes\2024-11-05_21h47_10.png)
+Nos saldrá la siguiente pantalla donde tendremos que rellenar los datos requeridos, como el nombre del repositorio y la descripción y hay que ponerlo público para que la gente lo pueda consultar.
+
+![Información de un repositorio](C:\Users\paupe\Documents\Màster\Assignatures\Anàlisi de dades òmiques\PAC1\Imagenes\2024-11-05_21h47_27.png)
+Con todo esto obtenemos el repositorio creado vacío.
+
+![Repositorio vacío](C:\Users\paupe\Documents\Màster\Assignatures\Anàlisi de dades òmiques\PAC1\Imagenes\2024-11-05_21h46_50.png)
+El programa *Sublime Merge* nos ayudará a subir los archivos al repositorio creado.
+
+![Clonado del repositorio en local](C:\Users\paupe\Documents\Màster\Assignatures\Anàlisi de dades òmiques\PAC1\Imagenes\2024-11-05_22h14_01.png)
+Adjuntamos todos los archivos que el enunciado nos pide en la carpeta que se ha creado cuando lo hemos clonado.
+
+![Archivos en la carpeta clonada](C:\Users\paupe\Documents\Màster\Assignatures\Anàlisi de dades òmiques\PAC1\Imagenes\2024-11-05_22h20_48.png)
+Cuando volvemos a abrir *Sublime Merge* vemos que el programa los ha detectado como nuevos cambios.
+
+![Archivos detectados como cambios en el repositorio](C:\Users\paupe\Documents\Màster\Assignatures\Anàlisi de dades òmiques\PAC1\Imagenes\2024-11-05_22h21_09.png)
+Hacemos *commit* de los cambios para posteriormente hacer un *push* y subirlos al repositorio.
+
+![Commit de los archivos](C:\Users\paupe\Documents\Màster\Assignatures\Anàlisi de dades òmiques\PAC1\Imagenes\2024-11-05_22h21_22.png)
+Ya tendremos los archivos subidos.
+
+![Repostorio con los cambios](C:\Users\paupe\Documents\Màster\Assignatures\Anàlisi de dades òmiques\PAC1\Imagenes\2024-11-05_22h31_52.png)
