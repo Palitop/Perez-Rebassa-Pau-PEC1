@@ -36,7 +36,7 @@ informacio_mostra$SampleType = as.factor(informacio_mostra$SampleType)
 informacio_mostra$Class = as.factor(informacio_mostra$Class)
 ```
 
-Per poder seguir endavant en la creació de l'objecte, hem de relacionar d'alguna manera la informació de les mostres amb les dades. Per això cream una nova columna que contendrà un identificador que nosaltres crearem depenent de cada valor de *Idx*, *SampleType*, *Class* de la variable *informació_mostra*, per exmple, en el primer valor quedaria així: ***1_QC_QC***.
+Per poder seguir endavant en la creació de l'objecte, hem de relacionar d'alguna manera la informació de les mostres amb les dades. Per això cream una nova columna que contendrà un identificador que nosaltres crearem depenent de cada valor de *Idx*, *SampleType*, *Class* de la variable *informació_mostra*, per exmple, en el primer valor quedaria així: ***1_Q_QC***.
 
 ```{r}
 suppressMessages(suppressPackageStartupMessages(library(dplyr)))
@@ -72,4 +72,15 @@ suppressMessages(suppressPackageStartupMessages(library(SummarizedExperiment)))
 library(SummarizedExperiment)
 experiment = SummarizedExperiment(assays = list(rawValues = matriu_dades),
                                   rowData = informacio_mostra, colData = meta)
+show(experiment)
 ```
+
+## Diferència entre *ExpresionSet* i *SummarizedExperiment*
+
+La classe *ExpressionSe*t és una estructura més antiga, pensada especialment per a dades de microarrays. Aquesta classe permet emmagatzemar una sola matriu de dades (amb expressió gènica, intensitats, etc.) i relacionar-la amb informació sobre les mostres (*phenoData*) i informació sobre les característiques (gens o metabòlits, dins featureData). Tota aquesta informació es guarda en objectes de tipus *AnnotatedDataFrame*, que poden resultar una mica menys intuïtius o menys flexibles si els comparem amb estructures més modernes.
+
+En canvi, la classe *SummarizedExperiment* és més recent i està dissenyada per gestionar de manera més eficient i modular dades d’altres tecnologies com *RNA-seq*, proteòmica o metabolòmica. Aquesta classe permet incloure múltiples matrius de dades (anomenades *assays*) dins del mateix objecte, cosa que resulta especialment útil si es volen guardar, per exemple, tant els valors bruts com els normalitzats. La informació de les mostres es guarda dins l’objecte *colData*, i la dels metabòlits (o gens) dins *rowData*, ambdós com a *DataFrame* del paquet S4Vectors, més flexible i fàcil de gestionar.
+
+Un altre punt fort de *SummarizedExperiment* és que s’integra millor amb molts paquets actuals del Bioconductor.
+
+Per tant, mentre que *ExpressionSet* només permet una única matriu de dades i està pensat per a anàlisis més clàssics, *SummarizedExperiment* ofereix una estructura més robusta, modular i preparada per als fluxos de treball òmics més actuals.
